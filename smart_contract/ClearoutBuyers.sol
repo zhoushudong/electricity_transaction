@@ -39,8 +39,8 @@ contract ClearoutBuyers is multiowned {
     // input: 1. _meter, address, the ethereum account address of a meter.
     //        2. _seqMeter, refer the sequence of the meter owned by the _owner.
     
-    function setMeterOwner(address _meter, uint256 _seqMeter, address _owner) onlymanyowners(sha3(msg.data)) returns (bool) {
-        ownMeters[_owner][_seqMeter] = _meter;
+    function setMeterOwner(address _meter, address _owner) onlymanyowners(sha3(msg.data)) returns (bool) {
+        ownMeters[_owner].push( _meter);
         isMeter[_meter] = true;
         return true;
     }
@@ -138,7 +138,7 @@ contract ClearoutBuyers is multiowned {
             throw;
         }
 
-        isMeterOpened[msg.sender] = true;
+        isMeterOpened[msg.sender] = _status;
         IsMeterOpened(_status,msg.sender);
         return true;
     }

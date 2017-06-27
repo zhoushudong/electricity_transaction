@@ -210,8 +210,8 @@ contract multiowned {
     uint public m_numOwners;
     
     // list of owners
-    uint[15] m_owners;
-    uint constant c_maxOwners = 10;
+    uint[20] m_owners;
+    uint constant c_maxOwners = 20;
     // index on the list of owners to allow reverse lookup
     mapping(uint => uint) m_ownerIndex;
     // the ongoing operations.
