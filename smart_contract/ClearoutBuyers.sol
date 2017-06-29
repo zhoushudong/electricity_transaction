@@ -11,7 +11,7 @@ contract ClearoutBuyers is multiowned {
     }
     
     // Fields
-    //uint256 public constant numAsset = 12 ; // the total number of power asset: m, m+1, m+2, m+3, ..., m+numAsset -1;
+    uint256 public constant numAsset = 12 ; // the total number of power asset: m, m+1, m+2, m+3, ..., m+numAsset -1;
     mapping(address=>_Power) public initialMeter; //  record intial values of kilo-watt meters
     mapping(address=>_Power[12]) public powers; // record kWh number of an address can use for m, m+1, m+2, m+3, ..., month
     mapping(address=>address[])  ownMeters; // one buyer has several meters.
@@ -56,20 +56,20 @@ contract ClearoutBuyers is multiowned {
         if (! isMeter[msg.sender] ) {
             throw;
         }
-        if (1==_type && powers[msg.sender][_seq%12].peak +_power >= initialMeter[msg.sender].peak )
+        if (1==_type && _power-powers[msg.sender][_seq%numAsset].peak  >= initialMeter[msg.sender].peak )
         {
-           powers[msg.sender][_seq%12].peak = 0;
-           initialMeter[msg.sender].peak += _power;
+           initialMeter[msg.sender].peak += powers[msg.sender][_seq%numAsset].peak;
+           powers[msg.sender][_seq%numAsset].peak = 0;
            SubmitPower(_power, _type);
            return true;
-        } else if (2==_type &&    powers[msg.sender][_seq%12].valley +_power >= initialMeter[msg.sender].valley){
-            powers[msg.sender][_seq%12].valley = 0;
-            initialMeter[msg.sender].valley += _power;
+        } else if (2==_type &&  _power- powers[msg.sender][_seq%numAsset].valley  >= initialMeter[msg.sender].valley){
+            initialMeter[msg.sender].valley += powers[msg.sender][_seq%numAsset].valley;
+            powers[msg.sender][_seq%numAsset].valley = 0;
             SubmitPower(_power, _type);
            return true;
-        } else if (3 == _type && powers[msg.sender][_seq%12].flat +_power >= initialMeter[msg.sender].flat){
-            powers[msg.sender][_seq%12].flat = 0;
-            initialMeter[msg.sender].flat += _power;
+        } else if (3 == _type && _power- powers[msg.sender][_seq%numAsset].flat  >= initialMeter[msg.sender].flat){
+            initialMeter[msg.sender].flat += powers[msg.sender][_seq%numAsset].flat;
+            powers[msg.sender][_seq%numAsset].flat = 0;
             SubmitPower(_power, _type);
            return true;
         }else {
@@ -93,16 +93,16 @@ contract ClearoutBuyers is multiowned {
         if (ownMeters[_owner][_seqMeter] != _meter) {
             throw;
         }
-        if (1==_type && 0==powers[_meter][_seq%12].peak) {
-            powers[_meter][_seq%12].peak = _power;
+        if (1==_type && 0==powers[_meter][_seq%numAsset].peak) {
+            powers[_meter][_seq%numAsset].peak = _power;
             WithdrawPower(_power,_type,_meter,_owner);
             return true;
-        } else if (2 == _type && 0==powers[_meter][_seq%12].valley) {
-            powers[_meter][_seq%12].valley = _power;
+        } else if (2 == _type && 0==powers[_meter][_seq%numAsset].valley) {
+            powers[_meter][_seq%numAsset].valley = _power;
             WithdrawPower(_power,_type,_meter,_owner);
             return true;
-        } else if (3 == _type && 0==powers[_meter][_seq%12].flat) {
-            powers[_meter][_seq%12].flat = _power;
+        } else if (3 == _type && 0==powers[_meter][_seq%numAsset].flat) {
+            powers[_meter][_seq%numAsset].flat = _power;
             WithdrawPower(_power,_type,_meter,_owner);
             return true;
         } else {
