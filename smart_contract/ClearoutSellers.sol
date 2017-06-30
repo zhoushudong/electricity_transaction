@@ -147,7 +147,7 @@ contract ClearoutSellers is multiowned {
     //        3. _flat, uint256
     
     function setIntialMeter(uint256 _peak, uint256 _valley, uint256 _flat) returns (bool) {
-        if(0==isMeter[msg.sender]) {
+        if(!isMeter[msg.sender]) {
             throw;
         }
         initialMeter[msg.sender].peak = _peak;
@@ -164,7 +164,7 @@ contract ClearoutSellers is multiowned {
     //           3. _meter, address, the address of a meter
     //           4. _seq, uint256, the sequence of selling the power on the stellar
     //           5. _seqMeter, uint256, the sequence of the meters owned by a seller
-    //           5. _owner, address, the address of the owner of the meter
+    //           6. _owner, address, the address of the owner of the meter
     
     function presale(uint256 _electricity, uint256 _type, address _meter, uint256 _seq, uint256 _seqMeter, address _owner) onlymanyowners(sha3(msg.data)) returns (bool) {
         if(!isMeter[_meter]) {
